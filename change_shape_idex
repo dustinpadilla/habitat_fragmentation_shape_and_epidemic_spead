@@ -1,0 +1,362 @@
+
+
+
+
+set(groot,'DefaultFigureColormap',jet)
+figure()
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% INITIALIZES PARAMETER VALUES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+to=0;
+tf=100;
+%IC=[300, 0, 0, 299, 1, 0];
+
+
+A  = 500;
+c  = 3.55;
+Z  = 1000;
+d = .001*A
+
+
+
+
+
+alpha1 = 30;
+delta1 = .3;
+beta1  = .3;
+gamma1 = .1;
+sigma1 = .1;
+eta1   = .3;
+
+
+alpha2 = 30;
+delta2 = .3;
+beta2  = .3;
+gamma2 = .1;
+sigma2 = .1;
+eta2   = .3;
+
+
+
+
+%N2=300;
+
+%FOR CONSTANT GROWTH
+SWo = alpha2*(gamma2 + sigma2)/(sigma2*beta2);
+IWo = -(-beta2*alpha2 + alpha2*gamma2 + alpha2*sigma2)*(eta2 + sigma2)/(beta2*sigma2*(eta2 + gamma2 + sigma2));
+RWo = -gamma2*(-beta2*alpha2 + alpha2*gamma2 + alpha2*sigma2)/(beta2*sigma2*(eta2 + gamma2+ sigma2));
+
+% FOR EXPONENTIAL GROWTH
+% SWo = N2*(gamma2+alpha2)/beta2
+% IWo = (N2*(alpha2*beta2-gamma2*sigma2-sigma2^2)*(eta2+sigma2))/(beta2*sigma2*(eta2+gamma2+sigma2))
+% RWo = (N2*gamma2*(alpha2*beta2-gamma2*sigma2-sigma2^2))/(beta2*sigma2*(eta2+gamma2+sigma2))
+
+% SWo = (gamma2+alpha2)/beta2
+% IWo = ((alpha2*beta2-gamma2*sigma2-sigma2^2)*(eta2+sigma2))/(beta2*sigma2*(eta2+gamma2+sigma2))
+% RWo = (gamma2*(alpha2*beta2-gamma2*sigma2-sigma2^2))/(beta2*sigma2*(eta2+gamma2+sigma2))
+
+% SWo = gamma2/beta2;
+% IWo = 50;
+% RWo = IWo*gamma2/eta2;
+
+
+
+IC=[300, 0, 0, SWo, IWo, RWo];
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% VARY PARAMETER VALUES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+CM = jet(1000);
+
+minL=2*sqrt(pi*A);
+maxL=1000;
+L_values = minL:100:maxL;
+CM = jet(length(L_values));
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% SOLVE AND PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DOMESTIC POPULATION PLOT%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+figure(1)
+% axes1 = axes('Parent',figure(1),...
+%     'Position',[0.0927083333333333 0.137998056365403 0.583333333333333 0.719144800777454]);
+% hold(axes1,'on');
+
+axes1 = axes('Parent',figure(1));
+hold(axes1,'on');
+
+box(axes1,'on');
+% Set the remaining axes properties
+set(axes1,'FontSize',50);
+
+
+
+
+for i=1:1:length(L_values)
+    
+      %L=1000                   
+     mu=L_values(i)/(2*sqrt(pi*A))
+                       
+     %d=(.25*A*2*sqrt(pi))/(3.55*L)
+     O=c*d*mu*sqrt(A)
+     C=A-O
+     
+    % if C<=0
+     %   disp ("D is too big")
+      %  break
+    % end
+     
+
+
+
+
+
+
+    params = [A,L_values(i),d, c, Z, O, C, alpha1, delta1, beta1, gamma1, sigma1, eta1, alpha2, delta2, beta2, gamma2, sigma2, eta2];
+    opts = odeset('RelTol',1.e-20);
+    options = odeset('OutputFcn',@odephas3);
+    [t,y] = ode15s(@newproj2,[to tf],IC,opts,params);
+
+
+    
+    plot(t,y(:,2),'color',CM(i,:),'LineWidth',6);
+    hold on
+    %col=colorbar('Ticks',[0,.1,.2,.4,1],'TickLabels',{'16-Circle','','','','1000'});
+% %     col=colorbar(axes1,'Position',...
+% %     [0.878645833333333 0.141885325558795 0.0083333333333333 0.723032069970845],...
+% %     'Ticks',[0,.075,.15,.25,1],'TickLabels',{'1.00','1.41','1.96','3.04','12.00'},'FontSize', 50);
+% %     col.Label.String = 'Shape Index (\mu)';
+    shg
+    title({'Disease Prevalence in the Domesticated Population:';'Increasing the Shape Index'},'FontSize', 50)
+    %title('Domesticated Prevalence: Increasing the Shape Index') 
+    ax = gca;
+    ax.FontSize = 50;
+    x_axis_label=xlabel('Time (  )','FontSize', 50)
+    y_axis_label=ylabel('Prevalence (    )','FontSize', 50)
+    y_axis_label.Position(1) = -7.745762711864415 ; % change horizontal position of ylabel
+    y_axis_label.Position(2) = 144.7761505123996; % change vertical position of ylabel
+    y_axis_label.Position(3)= 0;
+    ylim([0 300])
+    
+
+    
+%     y_axis_label.Position(1) = -0.07810488233309; % change horizontal position of ylabel
+%     y_axis_label.Position(2) = 0.482672251530061; % change vertical position of ylabel
+%     y_axis_label.Position(3)= 0;
+   
+    
+end
+
+
+
+set(axes1,'FontSize',50,'OuterPosition',...
+    [-0.036155913978495 0.014577259475219 0.991263440860215 0.991982507288629]);
+
+    col=colorbar(axes1,'Position',...
+    [0.878645833333333 0.141885325558795 0.0083333333333333 0.723032069970845],...
+    'Ticks',[0,.075,.15,.25,1],'TickLabels',{'1.00','1.41','1.96','3.04','12.00'},'FontSize', 50);
+    col.Label.String = 'Shape Index (\mu)';
+
+    h = annotation(gcf,'textarrow',...
+ [0.0200476190476186 0.0200476190476186],...
+    [0.659102688694525 0.659102688694525],...
+    'String','$I_D$','Interpreter','latex','HeadStyle', 'none', 'LineStyle', 'none',...
+    'FontSize',50, 'color','k','FontWeight','bold', 'TextRotation',90);
+    
+    hh = annotation(gcf,'textarrow',...
+    [0.506 0.2],[.039 0],...
+    'String','$t$','Interpreter','latex','HeadStyle', 'none', 'LineStyle', 'none',...
+    'FontSize',50, 'color','k','FontName','cambria math','FontWeight','bold', 'TextRotation',0);
+% 
+% [0.517187499999999 0.037609329446064],[0 0],...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WILD POPULATION PLOT%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+
+figure(2)
+% axes1 = axes('Parent',figure(1),...
+%     'Position',[0.0927083333333333 0.137998056365403 0.583333333333333 0.719144800777454]);
+% hold(axes1,'on');
+
+axes1 = axes('Parent',figure(2));
+hold(axes1,'on');
+
+box(axes1,'on');
+% Set the remaining axes properties
+set(axes1,'FontSize',50);
+
+for i=1:1:length(L_values)
+    
+      %L=1000                   
+     mu=L_values(i)/(2*sqrt(pi*A))
+                       
+     %d=(.25*A*2*sqrt(pi))/(3.55*L)
+     O=c*d*mu*sqrt(A)
+     C=A-O
+     
+    
+      %L=1000                   
+     mu=L_values(i)/(2*sqrt(pi*A))
+                       
+     %d=(.25*A*2*sqrt(pi))/(3.55*L)
+     O=c*d*mu*sqrt(A)
+     C=A-O
+     
+    % if C<=0
+     %   disp ("D is too big")
+      %  break
+    % end
+     
+    
+
+
+    params = [A,L_values(i),d, c, Z, O, C, alpha1, delta1, beta1, gamma1, sigma1, eta1, alpha2, delta2, beta2, gamma2, sigma2, eta2];
+    opts = odeset('RelTol',1.e-20);
+    %options = odeset('OutputFcn',@odephas3);
+    [t,y] = ode15s(@newproj2,[to tf],IC,opts,params);
+    
+   
+
+    plot(t,y(:,5),'color',CM(i,:),'LineWidth',6);
+    hold on
+    %col=colorbar('Ticks',[0,.1,.2,.4,1],'TickLabels',{'16-Circle','','','','1000'});
+    col=colorbar('Ticks',[0,.075,.15,.25,1],'TickLabels',{'1.00','1.41','1.96','3.04','12.00'},'FontSize',50);
+    col.Label.String = 'Shape Index (\mu)';
+    shg
+    title({'Disease Prevalence in the Wild Population:';'Increasing the Shape Index'},'FontSize', 50)
+    %title('Wild Prevalence: Increasing the Shape Index') 
+    ax = gca;
+    ax.FontSize = 50;
+    x_axis_label=xlabel('Time (  )','FontSize', 50)
+    y_axis_label=ylabel('Prevalence (    )','FontSize', 50)
+    y_axis_label.Position(1) = -7.593220338983052 ; % change horizontal position of ylabel
+    y_axis_label.Position(2) = 142.2555778337561; % change vertical position of ylabel
+    y_axis_label.Position(3)= -1;
+    ylim([0 300])
+    
+
+    
+%     line([0 300],[300 300],'Color','k')
+%         
+%     line([300 300],[0 300],'Color','k')
+end
+
+
+set(axes1,'FontSize',50,'OuterPosition',...
+    [-0.036155913978495 0.014577259475219 0.991263440860215 0.991982507288629]);
+
+    col=colorbar(axes1,'Position',...
+    [0.878645833333333 0.141885325558795 0.0083333333333333 0.723032069970845],...
+    'Ticks',[0,.075,.15,.25,1],'TickLabels',{'1.00','1.41','1.96','3.04','12.00'},'FontSize', 50);
+    col.Label.String = 'Shape Index (\mu)';
+
+    hhh = annotation(gcf,'textarrow',...
+ [0.0200476190476186 0.0200476190476186],...
+    [0.659102688694525 0.659102688694525],...
+    'String','$I_W$','Interpreter','latex','HeadStyle', 'none', 'LineStyle', 'none',...
+    'FontSize',50, 'color','k','FontWeight','bold', 'TextRotation',90);
+    
+    hhhh = annotation(gcf,'textarrow',...
+    [0.506 0.2],[.039 0],...
+    'String','$t$','Interpreter','latex','HeadStyle', 'none', 'LineStyle', 'none',...
+    'FontSize',50, 'color','k','FontName','cambria math','FontWeight','bold', 'TextRotation',0);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% OLD CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% clear;
+% figure();
+% to = 0;
+% tf = 1000;
+% yo = [1000 100  0 1000 100  0];
+% %options = odeset('RelTol',1e-30);
+% options = odeset('OutputFcn',@odephas3);
+% [t y] = ode15s('proj2',[to tf],yo,options);
+% 
+% figure
+% plot(t,y(:,1),t,y(:,2),t,y(:,3));
+% 
+% 
+% 
+% 3D PHASE PORTRAIT
+
+
+figure(3)
+% axes1 = axes('Parent',figure(1),...
+%     'Position',[0.0927083333333333 0.137998056365403 0.583333333333333 0.719144800777454]);
+% hold(axes1,'on');
+% 
+% axes1 = axes('Parent',figure(1));
+% hold(axes1,'on');
+% 
+% box(axes1,'on');
+% % Set the remaining axes properties
+% set(axes1,'FontSize',50);
+
+
+
+
+for i=1:1:length(L_values)
+    
+      %L=1000                   
+     mu=L_values(i)/(2*sqrt(pi*A))
+                       
+     %d=(.25*A*2*sqrt(pi))/(3.55*L)
+     O=c*d*mu*sqrt(A)
+     C=A-O
+     
+    
+      %L=1000                   
+     mu=L_values(i)/(2*sqrt(pi*A))
+                       
+     %d=(.25*A*2*sqrt(pi))/(3.55*L)
+     O=c*d*mu*sqrt(A)
+     C=A-O
+     
+    % if C<=0
+     %   disp ("D is too big")
+      %  break
+    % end
+     
+    
+
+    params = [A,L_values(i),d, c, Z, O, C, alpha1, delta1, beta1, gamma1, sigma1, eta1, alpha2, delta2, beta2, gamma2, sigma2, eta2];
+    opts = odeset('RelTol',1.e-20);
+    options = odeset('OutputFcn',@odephas3);
+    [t,y] = ode15s(@newproj2,[to tf],IC,opts,params);
+    
+    
+  plot3(y(:,2),y(:,5),CM(i,:));
+    hold on
+xlabel('Infectious Domesticated')
+ylabel('Infectious Wild')
+zlabel('Length of Perimeter')
+
+title('Phase Diagram')
+    
+
+    
+%     line([0 300],[300 300],'Color','k')
+%         
+%     line([300 300],[0 300],'Color','k')
+end
+
+
+
+
+
+
+
+
+
