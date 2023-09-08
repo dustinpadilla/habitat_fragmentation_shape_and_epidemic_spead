@@ -1,0 +1,97 @@
+
+
+
+
+
+
+
+
+
+function newproj2=newproj2(t,y,params)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A  = params(1);
+L  = params(2);
+d  = params(3);
+c  = params(4);
+Z  = params(5);
+C  = params(6);
+O  = params(7);
+
+alpha1 = params(8);
+delta1 = params(9);
+beta1  = params(10);
+gamma1 = params(11);
+sigma1 = params(12);
+eta1   = params(13);
+
+
+alpha2 = params(14);
+delta2 = params(15);
+beta2  = params(16);
+gamma2 = params(17);
+sigma2 = params(18);
+eta2   = params(19);
+
+
+
+%kappa1 = 0;
+%kappa2 = 0;
+
+
+%L=mu*2*sqrt(pi*A);
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EQUATIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%MASS ACTION
+
+% proj2(1) = alpha1-delta1*((c*d*L)^2/(4*pi*A*(Z-C)))*y(1)*(y(5))-beta1*y(1)*(y(2))-sigma1*y(1)+eta1*y(3);
+% 
+% proj2(2) = delta1*((c*d*L)^2/(4*pi*A*(Z-C)))*y(1)*(y(5))+beta1*y(1)*(y(2))-gamma1*y(2)-sigma1*y(2);
+% 
+% proj2(3) = gamma1*y(2)-eta1*y(3)-sigma1*y(3);
+% 
+% 
+% proj2(4) = alpha2-delta2*((c*d*L)^2/(4*pi*A*(Z-C)))*y(4)*(y(2))-beta2*y(4)*(y(5))-sigma2*y(4)+eta2*y(6);
+% proj2(5) = delta2*((c*d*L)^2/(4*pi*A*(Z-C)))*y(4)*(y(2))+beta2*y(4)*(y(5))-gamma2*y(5)-sigma2*y(5);
+% proj2(6) = gamma2*y(5)-eta2*y(6)-sigma2*y(6);
+% 
+% 
+% proj2 = [proj2(1) proj2(2) proj2(3) proj2(4) proj2(5) proj2(6)]';
+
+
+
+
+% STANDARD INCIDENCE
+
+newproj2(1) = alpha1-delta1*((c*d*L)^2/(4*pi*A*(Z-C)))*y(1)*(y(5)/(y(4)+y(5)+y(6)))-beta1*y(1)*(y(2)/(y(1)+y(2)+y(3)))-sigma1*y(1)+eta1*y(3);
+
+newproj2(2) = delta1*((c*d*L)^2/(4*pi*A*(Z-C)))*y(1)*(y(5)/(y(4)+y(5)+y(6)))+beta1*y(1)*(y(2)/(y(1)+y(2)+y(3)))-gamma1*y(2)-sigma1*y(2);
+
+newproj2(3) = gamma1*y(2)-eta1*y(3)-sigma1*y(3);
+
+
+newproj2(4) = alpha2-delta2*((c*d*L)^2/(4*pi*A*(Z-C)))*y(4)*(y(2)/(y(1)+y(2)+y(3)))-beta2*y(4)*(y(5)/(y(4)+y(5)+y(6)))-sigma2*y(4)+eta2*y(6);
+newproj2(5) = delta2*((c*d*L)^2/(4*pi*A*(Z-C)))*y(4)*(y(2)/(y(1)+y(2)+y(3)))+beta2*y(4)*(y(5)/(y(4)+y(5)+y(6)))-gamma2*y(5)-sigma2*y(5);
+newproj2(6) = gamma2*y(5)-eta2*y(6)-sigma2*y(6);
+
+
+newproj2 = [newproj2(1) newproj2(2) newproj2(3) newproj2(4) newproj2(5) newproj2(6)]';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
